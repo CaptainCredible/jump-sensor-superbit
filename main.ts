@@ -1,6 +1,18 @@
 let myNumber = 1
 let DEBUG = true
 
+input.onButtonPressed(Button.B, function() {
+    if(DEBUG){
+        jumps++
+    }
+})
+
+input.onButtonPressed(Button.A, function () {
+    if (DEBUG) {
+        basic.showNumber(jumps)
+    }
+})
+
 let allowedToCount = false
 if(DEBUG){
     allowedToCount = true
@@ -10,9 +22,10 @@ basic.showIcon(IconNames.StickFigure)
 basic.clearScreen()
 let jumped = false// jumped = true after high acc event and false after low acc event
 let jumps = 0 //counter for jumps
-
 let lowThresh = 400
 let highThresh = 2000
+
+
 
 let lowDurationThresh = 80
 let highDurationThresh = 50
