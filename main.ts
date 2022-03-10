@@ -1,15 +1,17 @@
-let myNumber = 1
+let myNumber = 0
 let DEBUG = true
 
 input.onButtonPressed(Button.B, function() {
     if(DEBUG){
         jumps++
+        basic.showNumber(jumps,20)
     }
 })
 
 input.onButtonPressed(Button.A, function () {
     if (DEBUG) {
-        basic.showNumber(jumps)
+        jumps--
+        basic.showNumber(jumps, 20)
     }
 })
 
@@ -18,13 +20,13 @@ if(DEBUG){
     allowedToCount = true
 }
 
+basic.showNumber(myNumber, 100)
 basic.showIcon(IconNames.StickFigure)
 basic.clearScreen()
 let jumped = false// jumped = true after high acc event and false after low acc event
 let jumps = 0 //counter for jumps
 let lowThresh = 400
 let highThresh = 2000
-
 
 
 let lowDurationThresh = 80
@@ -69,7 +71,7 @@ loops.everyInterval(5, function () {
     //serial.writeValue("raw", myAcc)
     //serial.writeValue("avg", myAvgAcc)
     if(DEBUG){
-        radio.sendValue("avg", myAvgAcc)
+        //radio.sendValue("avg", myAvgAcc)
     }
     
 
@@ -77,7 +79,9 @@ loops.everyInterval(5, function () {
     if(myAvgAcc>highThresh && !wasHigh){
         //went above high acceleration thresh
         wasHigh = true
-        radio.sendValue("high", 1)
+        if (DEBUG) {
+        //radio.sendValue("high", 1)
+        }
         highStart = input.runningTime()
     } else if (myAvgAcc < highThresh && wasHigh){
         wasHigh = false
@@ -127,6 +131,7 @@ radio.onReceivedValue(function(name: string, value: number) {
     if (name == "count") {
         basic.pause(myNumber * 2)
         radio.sendValue(myNumber.toString(), jumps)
+        basic.showIcon(IconNames.Chessboard,1)
     }
     
     if (name == "reset") { // set counts to 0
