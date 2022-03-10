@@ -1,7 +1,17 @@
 let myNumber = 1
 let DEBUG = false
 
-
+if (input.buttonIsPressed(Button.AB)) {
+    DEBUG = true
+    led.toggleAll()
+    music.playTone(220, 100)
+    led.toggleAll()
+    music.playTone(330, 100)
+    led.toggleAll()
+    music.playTone(440, 100)
+    led.toggleAll()
+    music.playTone(550, 100)
+}
 
 input.onButtonPressed(Button.B, function() {
     if(DEBUG){
@@ -151,14 +161,3 @@ radio.onReceivedValue(function(name: string, value: number) {
 
 })
 
-if (input.buttonIsPressed(Button.AB)) {
-    DEBUG = true
-    led.toggleAll()
-    music.playTone(220, 100)
-    led.toggleAll()
-    music.playTone(330, 100)
-    led.toggleAll()
-    music.playTone(440, 100)
-    led.toggleAll()
-    music.playTone(550, 100)
-}
