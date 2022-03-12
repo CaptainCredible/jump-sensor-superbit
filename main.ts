@@ -1,17 +1,7 @@
-let myNumber = 1
+let myNumber = 0
 let DEBUG = false
+let allowedToCount = false
 
-if (input.buttonIsPressed(Button.AB)) {
-    DEBUG = true
-    led.toggleAll()
-    music.playTone(220, 100)
-    led.toggleAll()
-    music.playTone(330, 100)
-    led.toggleAll()
-    music.playTone(440, 100)
-    led.toggleAll()
-    music.playTone(550, 100)
-}
 
 input.onButtonPressed(Button.B, function() {
     if(DEBUG){
@@ -27,7 +17,7 @@ input.onButtonPressed(Button.A, function () {
     }
 })
 
-let allowedToCount = false
+
 if(DEBUG){
     allowedToCount = true
 }
@@ -40,6 +30,7 @@ let jumps = 0 //counter for jumps
 let lowThresh = 400
 let highThresh = 2000
 
+basic.showIcon(IconNames.StickFigure)
 
 let lowDurationThresh = 80
 let highDurationThresh = 50
@@ -52,7 +43,8 @@ let highStart = 0
 
 let myAvgArray = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 , 1, 1, 1]
 
-led.plot(2,1)
+
+
 
 function averaged(newVal: number){
     myAvgArray.pop()
@@ -102,15 +94,17 @@ loops.everyInterval(5, function () {
         }
         let highDuration = input.runningTime() - highStart
         if(highDuration > highDurationThresh){
-            
-            if(!jumped){
-                jumped = true
-                led.toggle(2, 1)
-                led.toggle(2, 3)
-                music.playTone(660, 10)
-            } else {
-                music.playTone(550, 10)
+            if(allowedToCount){
+                if (!jumped) {
+                    jumped = true
+                    led.toggle(2, 1)
+                    led.toggle(2, 3)
+                    music.playTone(660, 10)
+                } else {
+                    music.playTone(550, 10)
+                }
             }
+            
         }
     }
 
@@ -127,15 +121,18 @@ loops.everyInterval(5, function () {
         radio.sendValue("low", 0)
         }
         let lowDuration = input.runningTime() - lowStart
-        if(lowDuration > lowDurationThresh && jumped){ // jumped = true after high acc event and false after low acc event
-            music.playTone(880, 20)
-            if(jumped){
-                jumped = false
-                led.toggle(2, 1)
-                led.toggle(2, 3)
-                countJump()
+        if(allowedToCount){
+            if (lowDuration > lowDurationThresh && jumped) { // jumped = true after high acc event and false after low acc event
+                music.playTone(880, 20)
+                if (jumped) {
+                    jumped = false
+                    led.toggle(2, 1)
+                    led.toggle(2, 3)
+                    countJump()
+                }
             }
         }
+        
     }
 })
 
@@ -148,11 +145,16 @@ radio.onReceivedValue(function(name: string, value: number) {
     
     if (name == "reset") { // set counts to 0
         jumps = 0
+        music.playTone(1000, 50)
         allowedToCount = true
+        basic.clearScreen()
+        led.plot(2, 1)
+
     }
     
     if (name == "stop") { //STOP THE COUNT!!!
         allowedToCount = false
+        basic.showIcon(IconNames.No,0)
     }
 
     if(name == "start"){    //ALLOW COUNTING (maybe dont use)
@@ -161,3 +163,37 @@ radio.onReceivedValue(function(name: string, value: number) {
 
 })
 
+
+// activate DEBUG
+let wasAB =false
+
+loops.everyInterval(1000, function() {
+    if (input.buttonIsPressed(Button.AB) && input.logoIsPressed()) {
+        if(wasAB){
+            DEBUG = !DEBUG
+            if(DEBUG){
+                led.toggleAll()
+                music.playTone(220, 100)
+                led.toggleAll()
+                music.playTone(330, 100)
+                led.toggleAll()
+                music.playTone(440, 100)
+                led.toggleAll()
+                music.playTone(550, 100)
+            } else {
+                led.toggleAll()
+                music.playTone(550, 100)
+                led.toggleAll()
+                music.playTone(440, 100)
+                led.toggleAll()
+                music.playTone(330, 100)
+                led.toggleAll()
+                music.playTone(220, 100)
+            }
+            
+        }
+        wasAB = true
+    } else {
+        wasAB = false
+    }
+})
