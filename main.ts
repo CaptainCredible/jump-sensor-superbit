@@ -1,7 +1,9 @@
 let myNumber = 0
 let DEBUG = false
-let allowedToCount = false
+let allowedToCount = true
 
+
+music.playTone(440, 200)
 
 input.onButtonPressed(Button.B, function() {
     if(DEBUG){
@@ -27,24 +29,24 @@ basic.showIcon(IconNames.StickFigure)
 basic.clearScreen()
 let jumped = false// jumped = true after high acc event and false after low acc event
 let jumps = 0 //counter for jumps
-let lowThresh = 400
-let highThresh = 2000
+
+let lowThresh = 400 //what is considered to be weightlessness
+let highThresh = 2000 //what is considered to be bouncing
+let lowDurationThresh = 80 //how long i need to be wheightless
+let highDurationThresh = 50 //how long i need to be bouncing
+let movingAverageCount = 16
+let myAvgArray: number[] = []
+for(let i = 0; i<movingAverageCount; i++){
+    myAvgArray[i] = 1024
+}
 
 basic.showIcon(IconNames.StickFigure)
-
-let lowDurationThresh = 80
-let highDurationThresh = 50
 
 let wasLow = false
 let wasHigh = false
 
 let lowStart = 0
 let highStart = 0
-
-let myAvgArray = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 , 1, 1, 1]
-
-
-
 
 function averaged(newVal: number){
     myAvgArray.pop()
@@ -90,7 +92,7 @@ loops.everyInterval(5, function () {
     } else if (myAvgAcc < highThresh && wasHigh){
         wasHigh = false
         if (DEBUG) {
-        radio.sendValue("high", 0)
+        //radio.sendValue("high", 0)
         }
         let highDuration = input.runningTime() - highStart
         if(highDuration > highDurationThresh){
@@ -112,13 +114,13 @@ loops.everyInterval(5, function () {
     if(myAvgAcc < lowThresh && !wasLow){
         //went below weightless thresh
         wasLow = true
-        radio.sendValue("low", 1)
+        //radio.sendValue("low", 1)
         lowStart = input.runningTime()
     } else if (myAvgAcc > lowThresh && wasLow){
         // came back from below weightless thresh
         wasLow = false
         if (DEBUG) {
-        radio.sendValue("low", 0)
+        //radio.sendValue("low", 0)
         }
         let lowDuration = input.runningTime() - lowStart
         if(allowedToCount){
@@ -138,7 +140,12 @@ loops.everyInterval(5, function () {
 
 radio.onReceivedValue(function(name: string, value: number) {
     if (name == "count") {
-        basic.pause(myNumber * 2)
+        if(myNumber != 0){
+            control.waitMicros(10000 * myNumber)
+        }
+        else {
+            basic.pause(1)
+        }
         radio.sendValue(myNumber.toString(), jumps)
         basic.showIcon(IconNames.Chessboard,1)
     }
